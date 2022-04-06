@@ -52,7 +52,7 @@ class PostController extends Controller
             'content' => 'required|string',
             'image' => 'nullable|url',
             'category_id' => 'nullable|exists:categories,id',
-            'tags' =>  'nullable|exists:tags,id'
+            'tags' => 'nullable|exists:tags,id'
         ], [
             'required.title' => 'Il titolo è obbligatorio',
             'min.title' => 'La lunghezza minima del titolo è di 5 caratteri',
@@ -66,6 +66,8 @@ class PostController extends Controller
         $post->fill($data);
         $post->slug = Str::slug($post->title, '-');
         $post->save();
+
+        if(array_key_exists('tags', $data)) $post->tags()->attach($data['tags']);
 
         return redirect()->route('admin.posts.index')->with('message', 'Post creato con successo!')->with('type', 'success');
     }
