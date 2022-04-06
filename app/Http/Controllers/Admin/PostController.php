@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -30,8 +31,9 @@ class PostController extends Controller
     public function create()
     {
         $post = new Post();
+        $tags = Tag::all();
         $categories = Category::all();
-        return view('admin.posts.create', compact('post', 'categories'));
+        return view('admin.posts.create', compact('tags', 'post', 'categories'));
     }
 
     /**
@@ -42,16 +44,21 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {   
+
+        //dd($request->all());
+
         $request->validate([
             'title' => 'required|string|unique:posts|min:5|max:50',
             'content' => 'required|string',
             'image' => 'nullable|url',
-            'category_id' => 'nullable|exists:categories,id'
+            'category_id' => 'nullable|exists:categories,id',
+            'tags' =>  'nullable|exists:tags,id'
         ], [
             'required.title' => 'Il titolo è obbligatorio',
             'min.title' => 'La lunghezza minima del titolo è di 5 caratteri',
             'max.title' => 'La lunghezza massima del titolo è di 50 caratteri',
             'unique.title' => "Esiste già un post dal titolo $request->title",
+            'tags.exists' => 'Uno dei tag selezionati non è valido'
         ]);
 
         $data = $request->all();
@@ -82,8 +89,10 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        $tags = Tag::all();
+
         $categories = Category::all();
-        return view('admin.posts.edit', compact('post', 'categories'));
+        return view('admin.posts.edit', compact('tags', 'post', 'categories'));
     }
 
     /**
