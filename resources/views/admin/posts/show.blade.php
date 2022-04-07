@@ -4,7 +4,8 @@
 <div class="container">
 
     <h1>{{$post->title}}</h1>
-    @if($post->image) <img src="{{$post->image}}" alt="{{$post->slug}}"> @endif
+    @if($post->image)
+     <img src="{{ asset("storage/$post->image") }}" alt="{{$post->slug}}"> @endif
     <p>{{$post->content}}</p>
     <time>{{$post->created_at}}</time>
  

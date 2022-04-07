@@ -8,10 +8,10 @@
     </div>
     @endif
     @if($post->exists)
-    <form action="{{route('admin.posts.update', $post->id)}}" method="POST" novalidate>
+    <form action="{{route('admin.posts.update', $post->id)}}" method="POST" enctype="multipart/form-data" novalidate>
       @method('PUT')
     @else
-    <form action="{{route('admin.posts.store')}}" method="POST" novalidate>
+    <form action="{{route('admin.posts.store')}}" method="POST" enctype="multipart/form-data" novalidate>
     @endif
         @csrf
 <div class="row">
@@ -40,12 +40,16 @@
 
     <div class="col-11">
      <div class="form-group">
-       <label for="image"></label>
-       <input type="url" class="form-control @error('image') is-invalid @enderror" id="image" name="image" placeholder="Url dell' immagine" value="{{old('image', $post->image)}}"/>
+       <label for="image">Immagine</label>
+       <input type="file" class="form-control-file @error('image') is-invalid @enderror" id="image" name="image" placeholder="Url dell' immagine"/>
      </div>
     </div>
     <div class="col-1">
-        <img src="https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png" alt="placeholder" class="img-fluid" id="preview">
+      @if($post->image)
+        <img src="{{ asset("storage/$post->image") }}" alt="{{ $post->slug }}" class="img-fluid" id="preview">
+      @else
+      <img src="https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640" alt="preview" class="img-fluid" id="preview">
+      @endif
     </div>
 
     <div class="col-12">
