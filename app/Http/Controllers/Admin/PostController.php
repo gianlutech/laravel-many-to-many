@@ -9,7 +9,10 @@ use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PublishedPostMail;
 
 class PostController extends Controller
 {
@@ -73,6 +76,13 @@ class PostController extends Controller
         $post->fill($data);
         $post->slug = Str::slug($post->title, '-');
         $post->save();
+
+        //mando la mail di conferma
+
+        $mail = new PublishedPostMail($post);
+        $receiver = Auth::user()->email;
+        Mail::to($receiver)->send($mail);
+
 
         if(array_key_exists('tags', $data)) $post->tags()->attach($data['tags']);
 
@@ -152,7 +162,7 @@ class PostController extends Controller
         if($post->image) Storage::delete($post->image);
 
         $post->delete();
-        
+
         return redirect()->route('admin.posts.index')->with('message', "Il post $post->title è stato eliminato")->with('type', 'danger');
     }
 }
